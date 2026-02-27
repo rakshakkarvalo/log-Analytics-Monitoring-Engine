@@ -1,0 +1,22 @@
+2026-02-10 14:02:01 INFO  AuthService  - User login request received (userId=1023)
+2026-02-10 14:02:01 DEBUG AuthService  - Validating credentials
+2026-02-10 14:02:02 INFO  AuthService  - User authenticated successfully
+2026-02-10 14:02:02 INFO  APIGateway  - Routing request to UserService
+2026-02-10 14:02:03 INFO  UserService  - Fetching user profile from database
+2026-02-10 14:02:03 DEBUG DBService    - Executing SELECT query on users table
+2026-02-10 14:02:03 INFO  DBService    - Query executed in 12 ms
+2026-02-10 14:02:04 INFO  UserService  - User profile data sent to client
+2026-02-10 14:02:05 WARN  CacheService - Cache miss for key=user_1023
+2026-02-10 14:02:05 INFO  CacheService - Updating cache with fresh data
+2026-02-10 14:02:06 INFO  PaymentService - Payment request initiated (orderId=5589)
+2026-02-10 14:02:06 DEBUG PaymentService - Connecting to payment gateway
+2026-02-10 14:02:07 INFO  PaymentService - Payment authorized successfully
+2026-02-10 14:02:07 INFO  OrderService - Order status updated to CONFIRMED
+2026-02-10 14:02:08 ERROR NotificationService - Failed to send email (SMTP timeout)
+2026-02-10 14:02:08 WARN  NotificationService - Retrying email notification
+2026-02-10 14:02:09 INFO  NotificationService - Email sent successfully
+2026-02-10 14:02:10 INFO  APIGateway  - Request completed with status 200
+2026-02-10 14:02:12 INFO  Monitoring   - CPU usage: 42%
+2026-02-10 14:02:12 INFO  Monitoring   - Memory usage: 63%
+2026-02-10 14:02:15 INFO  Scheduler    - Daily cleanup job started
+2026-02-10 14:02:16 INFO  Scheduler    - Cleanup job completed successfully
