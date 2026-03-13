@@ -1,0 +1,131 @@
+DATE: 27-2-26
+
+main.py
+import sys
+from pathlib import Path
+from datetime import time
+import time
+# Add backend folder to path
+#sys.path.insert(0, str(Path(__file__).parent / "backend"))
+
+from backend.config.dask_config import create_dask_client
+from backend.injection.loader import load_logs
+from backend.pipeline.processing import process_pipeline
+
+# def main():
+#     # Create a Dask client
+#     client = start_dask()
+#     print(client)
+#     print(f"Dashboard: {client.dashboard_link}")
+    
+#     # df = load_logs("data/sample_log.log")
+    
+#     start = time.time()
+#     # df = build_pipeline("data/sample_log.log")
+#     df = load_logs("data/sample_log.log")
+#     total_logs = df.count().compute()
+#     end = time.time()
+    
+#     # Now you can use the client to submit tasks to the Dask cluster
+#     # For example, you can use client.submit() to run a function on the cluster
+#     # result = client.submit(your_function, your_arguments)
+#     input("Press Enter to stop the cluster...") # give this line in code
+#     # Don't forget to close the client when you're done
+#     client.close()  
+
+def main():
+    print("Starting Log Processing...")
+    client = create_dask_client()
+    print("Dask Started Successfully")
+    print(f"dashboard:{client.dashboard_link}")
+    start= time.time()
+    print("start time", start)
+
+
+    df = process_pipeline("backend/sample_data/log_data.log")
+    print("Logs Loaded Successfully")
+    print(df.compute())
+
+
+
+  #  print("\nFirst 5 Parsed Logs:")
+ #   print(df.head())
+
+    print("\nLog Count by Level:")
+    result = df.count().compute()
+    print(result)
+    end= time.time()
+    print("end time", end)
+
+
+    client.close()
+    print("\nProcessing Finished Successfully!")
+    
+    
+if __name__ == "__main__":
+    main()
+processing.py
+#why pipeline?
+#this pipeline injects the raw log data using dask bag. parse them into structured data with the help of dask data frame, we can filter the invalid log entries and converts into data frame using meta data.
+
+#why meta data?
+#dask cannot guess the column type automatically , we tell dask what is key and what is the value(passing key and value pairs) like what are column names and data types of the particular column.
+
+#why objects?
+#raw log data are strings intially ,which are in text files, using objects it is safer browser for better understanding
+
+
+# example
+# meta_data = {
+#     # pandas/dask expects a valid dtype; use datetime64 for timestamp
+#     "timestamp": "datetime64[ns]", 
+#     "level" : "string", 
+#     "service" : "string", 
+#     "message" : "string",
+# }
+
+import dask.dataframe as dd
+from backend.injection.parser import parse_log_line
+from backend.injection.loader import load_logs
+
+
+def process_pipeline(file_path):
+    bag=load_logs(file_path)
+    parsed = (
+        bag.map(parse_log_line)
+        .filter(lambda x: x is not None)  # Filter out lines that failed to parse
+    )
+    meta = {
+        "timestamp": "datetime64[ns]", 
+        "level" : "string", 
+        "service" : "string", 
+        "message" : "string",
+    }
+    df = parsed.to_dataframe(meta=meta)
+    df["timestamp"] = dd.to_datetime(df["timestamp"], errors='coerce')  # Convert to datetime, coerce errors to NaT
+    return df
+
+OUTPUT:
+    python main.py
+(.venv) PS C:\Users\gkavi\OneDrive\Documents\log-analytics-monitoring-engine> python main.py
+Starting Log Processing...
+Dask Started Successfully
+dashboard:http://127.0.0.1:8787/status
+start time 1772202596.232106
+Logs Loaded Successfully
+            timestamp  level      service                          message
+0 2026-02-09 10:15:23   INFO         User   login successful (UserID: 102)
+1 2026-02-09 10:17:45   WARN    Incorrect   password attempt (UserID: 105)
+2 2026-02-09 10:20:10   INFO  Transaction       completed (TxnID: TXN4589)
+3 2026-02-09 10:22:36  ERROR     Database                connection failed
+4 2026-02-09 10:25:00   INFO         User  logout successful (UserID: 102)
+
+Log Count by Level:
+timestamp    5
+level        5
+service      5
+message      5
+dtype: int64
+end time 1772202596.3553998
+
+Processing Finished Successfully!

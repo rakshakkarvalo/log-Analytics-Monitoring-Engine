@@ -1,0 +1,129 @@
+Date: 4-3-26
+Topic: anamoly DETECTION
+
+Pandas vs Dask DataFrame
+
+Feature            | Pandas                         | Dask DataFrame
+---------------------------------------------------------------------------
+Parallelism        | Runs on single CPU core        | Parallel computation across multiple cores
+Lazy Execution     | No (executes immediately)      | Yes (tasks executed only when required)
+Large Datasets     | Not ideal for very large data  | Designed for very large datasets
+API                | Rich and widely used API       | Mostly similar to Pandas API
+Memory             | Loads entire dataset in RAM    | Uses partitioned data (chunks)
+
+
+Milestone - 3 : Anomaly Detection - Send Alert
+
+Anomaly
+-------
+An anomaly is abnormal or unusual behaviour in data, server, or website.
+
+Examples:
+- Sudden spike in website traffic
+- Server CPU usage very high
+- Unexpected drop in transactions
+
+
+Anomaly Detection
+-----------------
+Anomaly Detection means identifying abnormal or unusual behaviour in data
+that deviates from normal patterns.
+
+
+Types of Anomaly Detection
+--------------------------
+
+1. Statistical Anomaly Detection
+   - Uses statistical methods.
+   - Based on mean, standard deviation, probability.
+   - Example: CPU usage greater than 3× standard deviation.
+
+2. Machine Learning Based Detection
+   - Uses ML models to learn patterns from historical data.
+   - Detects anomalies when new data differs from learned patterns.
+   - Examples: Isolation Forest, One-Class SVM, Autoencoders.
+
+3. Rule-Based Detection
+   - Uses fixed conditions or thresholds.
+   - Easy to implement.
+
+   Example Rules:
+   - CPU usage > 90% → Send alert
+   - Response time > 3 seconds → Trigger warning
+   - Failed login attempts > 10 → Security alert
+
+-------------------------------------------------------------------------------------
+Alert: 
+What is mean by alert:
+alert is an automatic notification sent by system, when an event is occurred.
+
+an alert is a warning message generated when the system detects abnormal behaviour in log
+data
+
+------------------------------------------------------------------------
+for email alret we use smtp protocol
+--------------------------------------------------------------------------------------
+SMTP (Simple Mail Transfer Protocol)
+
+SMTP stands for Simple Mail Transfer Protocol.
+It is a communication protocol used to send emails over the internet.
+
+SMTP is mainly used by applications, servers, and scripts to send email alerts or notifications.
+
+Why SMTP Is Used
+
+To send emails from applications or servers
+
+To deliver alerts automatically
+
+To communicate between mail servers
+
+Example:
+If a server error or anomaly is detected, the system can send an email alert using SMTP.
+-------------------------------------------------------------------------------------------------
+Task: Create email config file, email_name.py  write code email with python, try it only
+parameter: sender, reciver, password
+
+------------------------------------------------------------------------------------------------
+main py code 
+import time
+from backend.config.dask_config import create_dask_client
+from backend.pipeline.processing import process_pipeline
+
+
+def main():
+    print("Starting Log Processing...\n")
+
+    # Start Dask
+    client = create_dask_client()
+    print("Dask Started Successfully")
+    print(f"Dashboard: {client.dashboard_link}")
+    print("-" * 50)
+
+    start = time.time()
+
+    # Build pipeline
+    df = process_pipeline("backend/sample_data/log_data.log")
+    print("Logs Loaded & Parsed Successfully\n")
+
+    # ✅ SHOW DATAFRAME OUTPUT (TABLE FORMAT)
+    print("Parsed Log Data (Table Format):")
+    print(df.compute())   # <-- THIS LINE SHOWS TABLE OUTPUT
+
+    # ✅ Count total rows correctly
+    total_logs = df.shape[0].compute()
+
+    end = time.time()
+
+    print("\nTotal Logs Processed:", total_logs)
+    print("Time Taken:", round(end - start, 4), "seconds")
+    print("Throughput:", round(total_logs / (end - start), 2), "logs/sec")
+
+    print("-" * 50)
+
+    client.close()
+    print("Processing Finished Successfully!")
+
+
+if __name__ == "__main__":
+    main()

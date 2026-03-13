@@ -1,0 +1,9 @@
+Date: 3-3-26
+Milestone 2
+Topic: ANOMOLY DETECTION (log-Analytics-Monitoring-Engine)
+
+with the help of zed score we will try to detect anmoly in our project 
+zscore we claculate no error, the values btw +3 and -3 
+
+just intro today
+task: SMTP

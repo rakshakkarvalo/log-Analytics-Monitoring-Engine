@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from dask.distributed import Client, LocalCluster
 #client (): client is a python method which is used to make a connection between dask cluster and
 #  python code which is mean as local machine 
@@ -11,10 +13,17 @@ from dask.distributed import Client, LocalCluster
 # can see the status of dask
 
 def create_dask_client():
+    # Keep scratch data inside the project to avoid temp-directory permission issues.
+    local_dir = Path(__file__).resolve().parents[2] / ".dask"
+    local_dir.mkdir(parents=True, exist_ok=True)
+
     cluster = LocalCluster(
-        n_workers=4,  # Number of workers in the cluster
+        n_workers=2,  # Number of workers in the cluster
         threads_per_worker=2,  # Number of threads per worker
+        processes=False,  # Use threads to avoid Windows process-spawn issues
+        data=dict,  # Keep worker data in memory; avoid spill directory permissions
         memory_limit='1GB',  # Memory limit for each worker
+        local_directory=str(local_dir),
         dashboard_address=":8790"
     )
     return Client(cluster)
