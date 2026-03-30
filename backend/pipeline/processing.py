@@ -24,3 +24,8 @@ from backend.injection.loader import load_logs
 
 def process_pipeline(file_path):
     return load_logs(file_path)
+
+
+def build_pipeline(file_path):
+    """Backward-compatible alias used by the project entrypoint."""
+    return process_pipeline(file_path)

@@ -1,0 +1,188 @@
+data: 18-3-26
+topic: steam lit(https://streamlit.io/)
+Importance
+
+1. Easy Data Visualization (plotly)
+2. Bigner friendly
+
+
+-----------------------
+Streamlit : Streamlit is an python open source framework used to create interactive web application quickly.
+instead of using web application we use streamlit
+
+here, we can create web application using python module or python script
+
+
+#dash
+
+Importance 
+
+1. Easy Data Visualization (plotly)
+2. Bigner friendly
+
+where this streamlit is used
+
+key feactures:
+st -> streamlit
+
+st.write("what is your name") -> display something
+st.titel("Monitoring Engine")
+st.button("submit)
+st.selection("select") dropdown
+st.file_upload()
+st.line_chart()
+
+
+
+
+
+install streamlit
+
+-> pip install streamlit, streamlit --version
+
+
+
+How to use within our project
+
+folder -> dashboard 
+file -> partice.py
+
+
+How to run it
+
+1. streamlit run dashboard/partice.py
+
+
+
+
+
+
+import streamlit as st
+
+st.title("welcome to streamlit")
+st.header("this is header")
+st.writer("this is normal text")
+
+
+
+#user input 
+name = st.text_input("enter your name")
+st.write("avinash", name)
+
+phone = st.number_input("enter yor mobile number")
+st.writer(6128777981, phone)
+
+#buttons
+
+st.button("submit")
+st.write("button clicked")
+
+
+#display table data
+
+import pandas as pd
+
+data = {"Name" :["SaiKumar", "Venkat"],"Ages": [20, 22], "locations": ["Macherial","Khamamam"]}
+
+df = pd.dataframe(data)
+
+st.write(df)
+
+# file upload
+# drop down(days of week)
+-----------------------------------------------
+Streamlit : Streamlit is an python open source framework used to create interactive web application quickly.
+instead of using web application we use streamlit
+
+here, we can create web application using python module or python script
+
+
+#dash
+
+Importance 
+
+1. Easy Data Visualization (plotly)
+2. Bigner friendly
+
+where this streamlit is used
+
+key feactures:
+st -> streamlit
+
+st.write("what is your name") -> display something
+st.titel("Monitoring Engine")
+st.button("submit)
+st.selection("select") dropdown
+st.file_upload()
+st.line_chart()
+
+
+
+
+
+install streamlit
+
+-> pip install streamlit, streamlit --version
+
+
+
+How to use within our project
+
+folder -> dashboard 
+file -> partice.py
+
+
+How to run it
+
+1. streamlit run dashboard/partice.py
+
+
+
+
+
+
+import streamlit as st
+
+st.title("welcome to streamlit")
+st.header("this is header")
+st.writer("this is normal text")
+
+
+
+#user input 
+name = st.text_input("enter your name")
+st.write("avinash", name)
+
+phone = st.number_input("enter yor mobile number")
+st.writer(6128777981, phone)
+
+#buttons
+
+st.button("submit")
+st.write("button clicked")
+
+
+#display table data
+
+import pandas as pd
+
+data = {"Name" :["SaiKumar", "Venkat"],"Ages": [20, 22], "locations": ["Macherial","Khamamam"]}
+
+df = pd.dataframe(data)
+
+st.write(df)
+
+# file upload
+# drop down(days of week)
+
+Gogula Avinash Kumar
+7:27 PM
+#display table data
+
+import pandas as pd
+
+data = {"Name" :["SaiKumar", "Venkat"],"Ages": [20, 22], "locations": ["Macherial","Khamamam"]}
+
+df = pd.dataframe(data)
+
+st.write(df)

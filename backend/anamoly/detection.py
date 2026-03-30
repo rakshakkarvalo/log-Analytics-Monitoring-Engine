@@ -1,41 +1,43 @@
-#Here we detect anamolies from log data by comparing current errors and normal behavior using stastics 
+# Here we detect anomalies from log data by comparing current errors
+# with typical error volume using a simple z-score.
 
 import dask.dataframe as dd
+import pandas as pd
 
-def detect_anamoly(log_df,z_threshold=3):
-    log_df["timestamp"] = dd.to_datetime(log_df["timestamp"])
-    
-    #count error per minute, per service
-    error_logs["minute"]  = error_logs["timestamp"].dt.floor("min")
-    error_logs = log_df[log_df["level"]=="ERROR"]
-    error_counts = (
-        error_logs.groupby("minute").size()
+
+def detect_anamoly(log_df, z_threshold=3):
+    if "timestamp" not in log_df.columns or "level" not in log_df.columns:
+        raise ValueError("log_df must contain 'timestamp' and 'level' columns")
+
+    prepared_df = log_df.assign(timestamp=dd.to_datetime(log_df["timestamp"]))
+    error_logs = prepared_df[prepared_df["level"] == "ERROR"].assign(
+        minute=lambda df: df["timestamp"].dt.floor("min")
     )
-    #Normal behavior
-    mean = error_counts["error_count"].mean().compute()
-    #suppose assume mean value as 20 the value will be stored in the key named error_count
-    std = error_counts["error_count"].std().compute()
-    if std == 0:
-        return error_counts.compute()
-    error_counts["anomaly_score"] = (error_counts["error_count"] - mean) / std
-    error_counts["is_anomaly"] = error_counts["anomaly_score"].abs() > z_threshold
-    return error_counts[error_counts["is_anomaly"]].compute()
-#threshold value, error count based on minute and time stamp and absolute value
-#in log level we have info,debug,errors and warning from log data in the part of levels
-#level :
-# 1. auth
-# 2. errors
-# 3. debug
-# 4. warnings
-#before filtering:
-#10:01 ERROR
-#10:01 INFO
-#10:01 ERROR
-#10:02 ERROR
-#10:02 ERROR
-#10:02 DEBUG
-#After filtering:
-#10:01 ERROR
-#10:01 ERROR
-#10:02 ERROR
-#10:02 ERROR
+
+    error_counts = (
+        error_logs.groupby("minute")
+        .size()
+        .rename("error_count")
+        .reset_index()
+    )
+
+    counts_df = error_counts.compute()
+    if counts_df.empty:
+        return pd.DataFrame(columns=["timestamp", "error_count", "z_score"])
+
+    counts_df = counts_df.rename(columns={"minute": "timestamp"})
+    mean = counts_df["error_count"].mean()
+    std = counts_df["error_count"].std()
+
+    if not std or pd.isna(std):
+        return pd.DataFrame(columns=["timestamp", "error_count", "z_score"])
+
+    counts_df["z_score"] = (counts_df["error_count"] - mean) / std
+    return counts_df[counts_df["z_score"].abs() > z_threshold][
+        ["timestamp", "error_count", "z_score"]
+    ].reset_index(drop=True)
+
+
+def detect_anomaly(log_df, z_threshold=3):
+    """Correctly spelled wrapper for callers."""
+    return detect_anamoly(log_df, z_threshold=z_threshold)

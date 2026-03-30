@@ -1,0 +1,39 @@
+Date:17-3-26
+Topic: generating random log data
+
+task: render.com
+-------------------------------------------
+import random
+import csv
+from datetime import datetime
+
+
+
+
+LOG_FILE = "sample_log/data_log.log"
+log_levels = ["INFO", "ERROR", "WARN", "DEBUG"]
+log_weights = [0.7, 0.1, 0.15, 0.05] 
+
+services = ["auth", "payment", "inventory", "shipping", "user", "orders", "notifications", "analytics", "search", "recommendation"]
+log_levels = ["INFO", "ERROR", "WARN", "DEBUG"]
+info_msgs = ["Request processed successfully", "User logged in", "Data retrieved", "Operation completed", "cache hit"," cache list", "connection established", "transaction completed", "email sent", "notification delivered"]
+error_msgs = ["Database connection failed", "Timeout occurred", "Null pointer exception", "Out of memory", "Service unavailable", "Failed to process request", "Unauthorized access attempt", "Data validation error", "Disk full", "API rate limit exceeded"]
+
+with open(LOG_FILE, "w") as f:
+    write= csv.writer(f)
+    writer= write.writerow(["timestamp", "service", "log_level", "message"])
+    print("Generating log data...")
+    
+while True:
+    level = random.choices(log_levels, weights=log_weights)[0]
+    row = [
+        datetime.now().isoformat(),
+        level,
+        random.choice(services),
+        random.choice(info_msgs) if level == "INFO" else random.choice(error_msgs),
+        random.choice(error_msgs) if level == "ERROR" else random.choice(info_msgs)
+    ]
+    with open(LOG_FILE, "a") as f:
+        write= csv.writer(f)
+        writer= write.writerow(row)
+        

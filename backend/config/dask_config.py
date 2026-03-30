@@ -27,3 +27,8 @@ def create_dask_client():
         dashboard_address=":8790"
     )
     return Client(cluster)
+
+
+def start_dask():
+    """Backward-compatible alias used by the project entrypoint."""
+    return create_dask_client()

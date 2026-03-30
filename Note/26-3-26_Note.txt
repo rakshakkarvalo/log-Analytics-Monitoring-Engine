@@ -1,0 +1,46 @@
+2026-03-26 19:13:23.532 urllib3 v2.0 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'OpenSSL 1.1.0h  27 Mar 2018'. See: https://github.com/urllib3/urllib3/issues/2168
+
+Sandhiya Chandran
+7:14 PM
+avinash for me it detected anomolies but after showing some error like timestamp so that the dask dasboard not opening
+
+Jangili Srividya
+7:19 PM
+use of conflict files
+create virtual environment
+  strip(),droupdict()
+create a email config file
+file uopload,dropdown
+
+Sushma Malisetty
+7:20 PM
+Smtp and port numbers
+7:21 PM
+Taks: explore about status code 
+1. explore status codes
+2. email connection in different ways
+3. what are webhooks
+
+SaiKumar Mudam
+7:21 PM
+about DASH
+7:22 PM
+create the detection py to calculate the z score
+
+Gogula Avinash Kumar
+7:22 PM
+1. confilicts files
+virtual environment
+json data
+explore on dask, Ray
+Meta data
+email connection
+streamlit
+plotly graphs
+menu, upload, dropdown
+7:22 PM
+render.com
+
+SaiKumar Mudam
+7:22 PM
+render.com

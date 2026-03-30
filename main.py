@@ -1,90 +1,55 @@
-# from datetime import time
-
-# # import the actual client creator and correct loader path
-# from backend.config.dask_config import create_dask_client
-# from backend.injection.loader import load_logs
-# from backend.pipeline.processing import process_pipeline       
-# # from processing.pipeline import build_pipeline
-
-
-# # def main():
-# #     # Create a Dask client
-# #     client = start_dask()
-# #     print(client)
-# #     print(f"Dashboard: {client.dashboard_link}")
-    
-# #     # df = load_logs("backend/sample_data/log_data.log")
-    
-# #     start = time.time()
-# #     # df = build_pipeline("data/sample_log.log")
-# #     df = load_logs("data/sample_log.log")
-# #     total_logs = df.count().compute()
-# #     end = time.time()
-    
-# #     # Now you can use the client to submit tasks to the Dask cluster
-# #     # For example, you can use client.submit() to run a function on the cluster
-# #     # result = client.submit(your_function, your_arguments)
-# #     input("Press Enter to stop the cluster...") # give this line in code
-# #     # Don't forget to close the client when you're done
-# #     client.close()  
-
-# def main():
-#     print("Starting Log Processing...")
-#     client = create_dask_client()
-#     print("Dask Started Successfully")
-
-#     # use the existing sample log under backend/sample_data
-#     df = process_pipeline("backend/sample_data/log_data.log")
-#     print("Logs Loaded Successfully")
-
-#     print("\nLog Count by Level:")
-#     result = df.count().compute()
-#     print(result)
-
-#     client.close()
-#     print("\nProcessing Finished Successfully!")
-    
-    
-# if __name__ == "__main__":
-#     main()
-
 import time
-from backend.config.dask_config import create_dask_client
-from backend.pipeline.processing import process_pipeline
+
+from backend.anamoly.detection import detect_anomaly
+from backend.config.dask_config import start_dask
+from backend.config.email_alert_config import send_anomaly_email
+from backend.pipeline.processing import build_pipeline
+
+ADMIN_EMAIL = "rakshakcarvlho2311@gmail.com"
 
 
 def main():
-    print("Starting Log Processing...\n")
+    client = start_dask()
+    try:
+        print(client)
+        print(f"Dashboard link: {client.dashboard_link}")
+        print("\n" + "=" * 50)
 
-    # Start Dask
-    client = create_dask_client()
-    print("Dask Started Successfully")
-    print(f"Dashboard: {client.dashboard_link}")
-    print("-" * 50)
+        start = time.time()
+        log_df = build_pipeline(r"backend/sample_data/log_data.log")
+        total_logs = log_df.shape[0].compute()
+        end = time.time()
 
-    start = time.time()
+        print("Total logs parsed:", total_logs)
+        print("Time taken:", round(end - start, 2), "seconds")
+        print("\nRunning anomaly detection...")
 
-    # Build pipeline
-    df = process_pipeline("backend/sample_data/log_data.log")
-    print("Logs Loaded & Parsed Successfully\n")
+        anomalies = detect_anomaly(log_df)
+        if anomalies.empty:
+            print("No anomalies detected")
+        else:
+            print(f"{len(anomalies)} anomalies detected!")
 
-    # ✅ SHOW DATAFRAME OUTPUT (TABLE FORMAT)
-    print("Parsed Log Data (Table Format):")
-    print(df.compute())   # <-- THIS LINE SHOWS TABLE OUTPUT
+            for _, row in anomalies.iterrows():
+                anomaly_data = {
+                    "timestamp": row["timestamp"],
+                    "error_count": row["error_count"],
+                    "z_score": row["z_score"],
+                }
 
-    # ✅ Count total rows correctly
-    total_logs = df.shape[0].compute()
+                try:
+                    send_anomaly_email(to_email=ADMIN_EMAIL, anomaly=anomaly_data)
+                    print(
+                        f"Alert sent | Time: {row['timestamp']} | "
+                        f"Errors: {row['error_count']}"
+                    )
+                except RuntimeError as exc:
+                    print(f"Email skipped: {exc}")
+                    break
+    finally:
+        client.close()
 
-    end = time.time()
-
-    print("\nTotal Logs Processed:", total_logs)
-    print("Time Taken:", round(end - start, 4), "seconds")
-    print("Throughput:", round(total_logs / (end - start), 2), "logs/sec")
-
-    print("-" * 50)
-
-    client.close()
-    print("Processing Finished Successfully!")
+    input("\nPress Enter to exit...")
 
 
 if __name__ == "__main__":

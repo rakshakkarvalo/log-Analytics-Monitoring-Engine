@@ -1,0 +1,7 @@
+date: 20-3-26
+topic: when error count< 30 it push to graph
+
+task: try this example st.sidebar.title("Menu")
+choice = st.sidebar.selectbox("Select option", ["Home", "About","contact-us"])
+its side bar
+ leatned about plotly
